@@ -28,8 +28,7 @@ return function (port)
          end
 
          local function startServingStatic(connection, req, args)
-	    fileInfo = dofile("srvStatic.lc")(connection, req, args)
-            --fileInfo = LFS.srvStatic(connection, req, args)
+	    fileInfo = LFS.srvStatic()(connection, req, args)
          end
          
          local function startServing(fileServeFunction, connection, req, args)
@@ -44,7 +43,7 @@ return function (port)
                end
             end)
 
-            local BufferedConnectionClass = dofile("srvConnection.lc")
+            local BufferedConnectionClass = LFS.srvConnection()
             local bufferedConnection = BufferedConnectionClass:new(connection)
             BufferedConnectionClass = nil
             local status, err = coroutine.resume(connectionThread, fileServeFunction, bufferedConnection, req, args)
@@ -125,7 +124,7 @@ return function (port)
             collectgarbage()
 
             -- parse payload and decide what to serve.
-            local req = dofile("srvRequest.lc")(payload)
+            local req = LFS.srvRequest()(payload)
             log(connection, req.method, req.request)
             if conf.auth.enabled then
                auth = LFS.srvBasicauth()

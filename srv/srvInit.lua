@@ -7,7 +7,7 @@
 local startServer = function(ip)
    local conf = dofile('httpserver-conf.lua')
    --if ( LFS.httpserver(conf['general']['port']) ) then
-   if (dofile("httpserver.lc")(conf['general']['port'])) then
+   if (LFS.httpserver()(conf['general']['port'])) then
 	  print("nodemcu-httpserver running at:")
       print("   http://" .. ip .. ":" ..  conf['general']['port'])
       if (mdns) then
