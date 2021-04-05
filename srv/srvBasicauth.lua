@@ -23,7 +23,7 @@ function basicAuth.authenticate(header)
    if not credentials_enc then
       return nil
    end
-   local credentials = dofile("httpserver-b64decode.lc")(credentials_enc)
+   local credentials = LFS.srvB64decode(credentials_enc)
    local user, pwd = credentials:match("^(.*):(.*)$")
    if loginIsValid(user, pwd, conf.auth.users) then
       print("httpserver-basicauth: User \"" .. user .. "\": Authenticated.")

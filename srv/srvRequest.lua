@@ -69,7 +69,8 @@ local function getRequestData(payload)
          elseif mimeType == "application/x-www-form-urlencoded" then
             requestData = parseFormData(body)
          else
-            requestData = {}
+	    -- raw body for other mime types
+            requestData = body
          end
          return requestData
       end

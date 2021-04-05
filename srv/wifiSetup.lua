@@ -1,4 +1,4 @@
--- httpserver-wifi.lua
+-- lib.wifi.setup.lua
 -- Part of nodemcu-httpserver, configures NodeMCU's WiFI in boot.
 -- Author: Marcos Kirsch
 

@@ -28,7 +28,8 @@ return function (port)
          end
 
          local function startServingStatic(connection, req, args)
-            fileInfo = dofile("httpserver-static.lc")(connection, req, args)
+	    fileInfo = dofile("srvStatic.lc")(connection, req, args)
+            --fileInfo = LFS.srvStatic(connection, req, args)
          end
          
          local function startServing(fileServeFunction, connection, req, args)
@@ -43,7 +44,7 @@ return function (port)
                end
             end)
 
-            local BufferedConnectionClass = dofile("httpserver-connection.lc")
+            local BufferedConnectionClass = dofile("srvConnection.lc")
             local bufferedConnection = BufferedConnectionClass:new(connection)
             BufferedConnectionClass = nil
             local status, err = coroutine.resume(connectionThread, fileServeFunction, bufferedConnection, req, args)
@@ -65,7 +66,7 @@ return function (port)
             if #(uri.file) > 32 then
                -- nodemcu-firmware cannot handle long filenames.
                uri.args = {code = 400, errorString = "Bad Request", logFunction = log}
-               fileServeFunction = dofile("httpserver-error.lc")
+               fileServeFunction = LFS.srvError()
             else
                local fileExists = false
 
@@ -84,7 +85,7 @@ return function (port)
 
                if not fileExists then
                   uri.args = {code = 404, errorString = "Not Found", logFunction = log}
-                  fileServeFunction = dofile("httpserver-error.lc")
+                  fileServeFunction = LFS.srvError()
                elseif uri.isScript then
                   fileServeFunction = dofile(uri.file)
                else
@@ -94,7 +95,7 @@ return function (port)
                      return
                   else
                      uri.args = {code = 405, errorString = "Method not supported", logFunction = log}
-                     fileServeFunction = dofile("httpserver-error.lc")
+                     fileServeFunction = LFS.srvError()
                   end
                end
             end
@@ -124,10 +125,10 @@ return function (port)
             collectgarbage()
 
             -- parse payload and decide what to serve.
-            local req = dofile("httpserver-request.lc")(payload)
+            local req = dofile("srvRequest.lc")(payload)
             log(connection, req.method, req.request)
             if conf.auth.enabled then
-               auth = dofile("httpserver-basicauth.lc")
+               auth = LFS.srvBasicauth()
                user = auth.authenticate(payload) -- authenticate returns nil on failed auth
             end
 
@@ -136,7 +137,7 @@ return function (port)
                handleRequest(connection, req, handleError)
             else
                local args = {}
-               local fileServeFunction = dofile("httpserver-error.lc")
+               local fileServeFunction = srvError
                if not user then
                   args = {code = 401, errorString = "Not Authorized", headers = {auth.authErrorHeader()}, logFunction = log}
                elseif req.methodIsValid then
@@ -173,7 +174,7 @@ return function (port)
                local fileSize = file.list()[fileInfo.file]
                -- Chunks larger than 1024 don't work.
                -- https://github.com/nodemcu/nodemcu-firmware/issues/1075
-               local chunkSize = 512
+               local chunkSize = 1400
                local fileHandle = file.open(fileInfo.file)
                if fileSize > fileInfo.sent then
                   fileHandle:seek("set", fileInfo.sent)
@@ -182,7 +183,7 @@ return function (port)
                   fileHandle = nil
                   fileInfo.sent = fileInfo.sent + #chunk
                   connection:send(chunk)
-                  -- print(fileInfo.file .. ": Sent "..#chunk.. " bytes, " .. fileSize - fileInfo.sent .. " to go.")
+                  print(fileInfo.file .. ": Sent "..#chunk.. " bytes, " .. fileSize - fileInfo.sent .. " to go.")
                   chunk = nil
                else
                   log(connection, "closing connetion", "Finished sending: "..fileInfo.file)

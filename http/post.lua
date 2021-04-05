@@ -1,5 +1,5 @@
 return function (connection, req, args)
-   dofile("httpserver-header.lc")(connection, 200, 'html')
+   srv.header(connection, 200, 'html')
    connection:send([===[
       <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Arguments by POST</title></head><body><h1>Arguments by POST</h1>
    ]===])

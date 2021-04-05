@@ -1,4 +1,4 @@
--- httpserver-init.lua
+-- httpserver.init.lua
 -- Part of nodemcu-httpserver, launches the server.
 -- Author: Marcos Kirsch
 
@@ -6,8 +6,9 @@
 -- If you compiled the mdns module, then it will also register with mDNS.
 local startServer = function(ip)
    local conf = dofile('httpserver-conf.lua')
+   --if ( LFS.httpserver(conf['general']['port']) ) then
    if (dofile("httpserver.lc")(conf['general']['port'])) then
-      print("nodemcu-httpserver running at:")
+	  print("nodemcu-httpserver running at:")
       print("   http://" .. ip .. ":" ..  conf['general']['port'])
       if (mdns) then
          mdns.register(conf['mdns']['hostname'], { description=conf['mdns']['description'], service="http", port=conf['general']['port'], location=conf['mdns']['location'] })

@@ -16,7 +16,7 @@ return function (connection, req, args)
    end
 
 
-   dofile("httpserver-header.lc")(connection, 200, 'html')
+   srv.header(connection, 200, 'html')
    connection:send([===[
 <!doctype html>
 <html lang="en">

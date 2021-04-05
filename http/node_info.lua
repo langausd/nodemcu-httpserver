@@ -13,7 +13,7 @@ local function sendAttr(connection, attr, val, unit)
 end
 
 return function (connection, req, args)
-   dofile("httpserver-header.lc")(connection, 200, 'html')
+   srv.header(connection, 200, 'html')
    connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>A Lua script sample</title></head><body><h1>Node info</h1><ul>')
    majorVer, minorVer, devVer, chipid, flashid, flashsize, flashmode, flashspeed = node.info();
    sendAttr(connection, "NodeMCU version"       , majorVer.."."..minorVer.."."..devVer)

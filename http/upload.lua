@@ -1,5 +1,5 @@
 return function (connection, req, args)
-    dofile("httpserver-header.lc")(connection, 200, 'json')
+    srv.header(connection, 200, 'json')
 	connection:send('{')
 
 	local mbOffset = nil

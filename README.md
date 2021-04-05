@@ -102,9 +102,11 @@ Let the abuse begin.
 
    1. Compile contents of `srv` into LFS image. There's a [cloud service](https://blog.ellisons.org.uk/article/nodemcu/a-lua-cross-compile-web-service/) and [docker image](https://github.com/marcelstoer/docker-nodemcu-build) that will help you with that.
 
-   1. Upload image file under `lfs.img` name. You may use Makefile rules `upload_lfs` and `upload_all_lfs` for this.
+   1. Upload image file under `lfs.img` name. Makefile rules `upload_server` and `upload_all` will do this for you.
 
    1. Reboot you NodeMCU. Init script will pick up image and apply it for you.
+
+   **NOTE: This branch has been refactored to work with LFS *only*!**
 
 ### Example: Garage door opener
 

@@ -8,28 +8,25 @@ if node.getpartitiontable().lfs_size > 0 then
 	 local f = file.open("lfs_lock", "w")
 	 f:flush()
 	 f:close()
-	 file.remove("httpserver-compile.lua")
-	 if (node.LFS.reload) then
-	    node.LFS.reload("lfs.img")
-	 else
-	    print "using old flashreload fallback."
-	    print " Consider updating to recent nodeMCU firmware!" 
-	    node.flashreload("lfs.img")
-	 end
+	 node.LFS.reload("lfs.img")
       end
    end
-   pcall(node.flashindex("_init"))
+   local init = node.LFS.get("_init")
+   if (init == nil) then
+      print("missing _init() function in LFS. Please load lfs.img!")
+   else
+      init()
+   end
+   init = nil
+   collectgarbage()
+else
+   print "Need recent nodeMCU firmware with LFS support!  ABORTING"
 end
 
--- Compile freshly uploaded nodemcu-httpserver lua files.
-if file.exists("httpserver-compile.lua") then
-   dofile("httpserver-compile.lua")
-   file.remove("httpserver-compile.lua")
+if ( pcall(LFS.init) ) then
+   print("init completed")
+else
+   print("init FAILED!")
 end
 
 
--- Set up NodeMCU's WiFi
-dofile("httpserver-wifi.lc")
-
--- Start nodemcu-httpsertver
-dofile("httpserver-init.lc")

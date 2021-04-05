@@ -4,8 +4,8 @@
 
 return function (connection, req, args)
 
-   local buffer = dofile("httpserver-buffer.lc"):new()
-   dofile("httpserver-header.lc")(buffer, req.code or 200, args.ext, args.isGzipped)
+   local buffer = dofile("srvBuffer.lc"):new()
+   srv.header(buffer, req.code or 200, args.ext, args.isGzipped)
    -- Send header and return fileInfo
    connection:send(buffer:getBuffer())
    
