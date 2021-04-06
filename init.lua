@@ -3,7 +3,7 @@ if node.getpartitiontable().lfs_size > 0 then
    if file.exists("lfs.img") then
       if file.exists("lfs_lock") then
 	 file.remove("lfs_lock")
-	 file.remove("lfs.img")
+	 file.rename("lfs.img", "lfs_current.img")
       else
 	 local f = file.open("lfs_lock", "w")
 	 f:flush()
