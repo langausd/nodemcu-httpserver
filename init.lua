@@ -24,7 +24,7 @@ else
 end
 
 if ( pcall(LFS.init) ) then
-   print("init completed")
+   -- print("init completed")
 else
    print("init FAILED!")
 end
