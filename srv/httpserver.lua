@@ -28,7 +28,7 @@ return function (port)
          end
 
          local function startServingStatic(connection, req, args)
-	    fileInfo = LFS.srvStatic()(connection, req, args)
+	    fileInfo = srv.static(connection, req, args)
          end
          
          local function startServing(fileServeFunction, connection, req, args)
@@ -65,7 +65,7 @@ return function (port)
             if #(uri.file) > 32 then
                -- nodemcu-firmware cannot handle long filenames.
                uri.args = {code = 400, errorString = "Bad Request", logFunction = log}
-               fileServeFunction = LFS.srvError()
+               fileServeFunction = srv.error
             else
                local fileExists = false
 
@@ -84,7 +84,7 @@ return function (port)
 
                if not fileExists then
                   uri.args = {code = 404, errorString = "Not Found", logFunction = log}
-                  fileServeFunction = LFS.srvError()
+                  fileServeFunction = srv.error
                elseif uri.isScript then
                   fileServeFunction = dofile(uri.file)
                else
@@ -94,7 +94,7 @@ return function (port)
                      return
                   else
                      uri.args = {code = 405, errorString = "Method not supported", logFunction = log}
-                     fileServeFunction = LFS.srvError()
+                     fileServeFunction = srv.error
                   end
                end
             end
@@ -127,8 +127,7 @@ return function (port)
             local req = LFS.srvRequest()(payload)
             log(connection, req.method, req.request)
             if conf.auth.enabled then
-               auth = LFS.srvBasicauth()
-               user = auth.authenticate(payload) -- authenticate returns nil on failed auth
+               user = srv.authenticate(payload) -- authenticate returns nil on failed auth
             end
 
             if user and req.methodIsValid and (req.method == "GET" or req.method == "POST" or req.method == "PUT") then
@@ -136,9 +135,9 @@ return function (port)
                handleRequest(connection, req, handleError)
             else
                local args = {}
-               local fileServeFunction = srvError
+               local fileServeFunction = srv.error
                if not user then
-                  args = {code = 401, errorString = "Not Authorized", headers = {auth.authErrorHeader()}, logFunction = log}
+                  args = {code = 401, errorString = "Not Authorized", headers = {srv.authErrorHeader()}, logFunction = log}
                elseif req.methodIsValid then
                   args = {code = 501, errorString = "Not Implemented", logFunction = log}
                else
