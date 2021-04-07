@@ -1,7 +1,7 @@
 -- httpserver-buffer
 -- Part of nodemcu-httpserver, provides a buffer that behaves like a connection object
 -- that can handle multiple consecutive send() calls, and buffers small payloads up to 1400 bytes.
--- This is primarily user to collect the send requests done by the head script.
+-- This is primarily used to collect the send requests done by the head script.
 -- The owner is responsible to call getBuffer and send its result
 -- Author: Gregor Hartmann
 
