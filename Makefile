@@ -16,10 +16,15 @@ define _upload
 @$(NODEMCU-UPLOADER) -b $(SPEED) --start_baud $(SPEED) -p $(PORT) upload $^
 endef
 
+GZFLAGS?=--best
+%.gz: %
+	gzip $(GZFLAGS) $<
+
 ######################################################################
 
 LFS_IMAGE ?= lfs.img
-HTTP_FILES := $(wildcard http/*)
+HTTP_FILES := $(wildcard http/*) \
+   $(patsubst %,%.gz,$(wildcard http/*.html http/*.css http/*.js))
 WIFI_CONFIG := $(wildcard *conf*.lua)
 LFS_FILES := $(LFS_IMAGE)  $(wildcard *.lua)
 FILE ?=

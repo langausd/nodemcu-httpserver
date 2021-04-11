@@ -85,10 +85,10 @@ function srv.authenticate(header)
    local credentials = LFS.srvB64decode(credentials_enc)
    local user, pwd = credentials:match("^(.*):(.*)$")
    if loginIsValid(user, pwd, conf.auth.users) then
-      print("httpserver-basicauth: User \"" .. user .. "\": Authenticated.")
+      lprint(3,"httpserver-basicauth: User \"" .. user .. "\": Authenticated.")
       return user
    else
-      print("httpserver-basicauth: User \"" .. user .. "\": Access denied.")
+      lprint(3,"httpserver-basicauth: User \"" .. user .. "\": Access denied.")
       return nil
    end
 end

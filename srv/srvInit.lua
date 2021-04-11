@@ -8,8 +8,8 @@ local startServer = function(ip)
    local conf = dofile('httpserver-conf.lua')
    --if ( LFS.httpserver(conf['general']['port']) ) then
    if (LFS.httpserver()(conf['general']['port'])) then
-	  print("nodemcu-httpserver running at:")
-      print("   http://" .. ip .. ":" ..  conf['general']['port'])
+	  lprint(3,"nodemcu-httpserver running at:")
+      lprint(3,"   http://" .. ip .. ":" ..  conf['general']['port'])
       if (mdns) then
          mdns.register(conf['mdns']['hostname'], { description=conf['mdns']['description'], service="http", port=conf['general']['port'], location=conf['mdns']['location'] })
          print ('   http://' .. conf['mdns']['hostname'] .. '.local.:' .. conf['general']['port'])
@@ -23,10 +23,10 @@ if (wifi.getmode() == wifi.STATION) or (wifi.getmode() == wifi.STATIONAP) then
    -- Connect to the WiFi access point and start server once connected.
    -- If the server loses connectivity, server will restart.
    wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(args)
-      print("Connected to WiFi Access Point. Got IP: " .. args["IP"])
+      lprint(3,"Connected to WiFi Access Point. Got IP: " .. args["IP"])
       startServer(args["IP"])
       wifi.eventmon.register(wifi.eventmon.STA_DISCONNECTED, function(args)
-         print("Lost connectivity! Restarting...")
+         lprint(2,"Lost connectivity! Restarting...")
          node.restart()
       end)
    end)
@@ -37,10 +37,10 @@ if (wifi.getmode() == wifi.STATION) or (wifi.getmode() == wifi.STATIONAP) then
       local ip = wifi.sta.getip()
       if (not ip) then ip = wifi.ap.getip() end
       if ip == nil then
-         print("No IP after a while. Restarting...")
+         lprint(2,"No IP after a while. Restarting...")
          node.restart()
       else
-         --print("Successfully got IP. Good, no need to restart.")
+         --lprint(5,"Successfully got IP. Good, no need to restart.")
          watchdogTimer:unregister()
       end
    end)

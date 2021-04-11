@@ -27,10 +27,10 @@ function Buffer:new()
 
    function newInstance:send(payload)
       local flushThreshold = 1400
-      if (not payload) then print("nop payload") end
+      if (not payload) then lprint(3,"no payload") end
       local newSize = self.size + payload:len()
       if newSize >= flushThreshold then
-         print("Buffer is full. Cutting off "..newSize-flushThreshold.." chars")
+         lprint(3,"Buffer is full. Cutting off "..newSize-flushThreshold.." chars")
          --STEP1: cut out piece from payload to complete threshold bytes in table
          local pieceSize = flushThreshold - self.size
          if pieceSize then

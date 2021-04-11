@@ -21,9 +21,9 @@ return function (port)
          local function log(connection, msg, optionalMsg)
             local port, ip = connection:getpeer()
             if(optionalMsg == nil) then
-               print(ip .. ":" .. port, msg)
+               lprint(3,ip .. ":" .. port, msg)
             else
-               print(ip .. ":" .. port, msg, optionalMsg)
+               lprint(3,ip .. ":" .. port, msg, optionalMsg)
             end
          end
 
@@ -70,10 +70,10 @@ return function (port)
                local fileExists = false
 
                if not file.exists(uri.file) then
-                  -- print(uri.file .. " not found, checking gz version...")
+                  -- lprint(5,uri.file .. " not found, checking gz version...")
                   -- gzip check
                   if file.exists(uri.file .. ".gz") then
-                     -- print("gzip variant exists, serving that one")
+                     -- lprint(4,"gzip variant exists, serving that one")
                      uri.file = uri.file .. ".gz"
                      uri.isGzipped = true
                      fileExists = true
@@ -116,7 +116,7 @@ return function (port)
                   bBodyMissing = true
                   return
                else
-                  --print("HTTP packet assembled! size: "..#fullPayload)
+                  --lprint(4,"HTTP packet assembled! size: "..#fullPayload)
                   payload = fullPayload
                   fullPayload, bBodyMissing = nil
                end
@@ -170,7 +170,7 @@ return function (port)
                end
             elseif fileInfo then
                local fileSize = file.list()[fileInfo.file]
-               -- Chunks larger than 1024 don't work.
+               -- Chunks larger than 1024 didn't work.
                -- https://github.com/nodemcu/nodemcu-firmware/issues/1075
                local chunkSize = 1400
                local fileHandle = file.open(fileInfo.file)
@@ -181,7 +181,7 @@ return function (port)
                   fileHandle = nil
                   fileInfo.sent = fileInfo.sent + #chunk
                   connection:send(chunk)
-                  print(fileInfo.file .. ": Sent "..#chunk.. " bytes, " .. fileSize - fileInfo.sent .. " to go.")
+                  lprint(4,fileInfo.file .. ": Sent "..#chunk.. " bytes, " .. fileSize - fileInfo.sent .. " to go.")
                   chunk = nil
                else
                   log(connection, "closing connetion", "Finished sending: "..fileInfo.file)
@@ -194,7 +194,7 @@ return function (port)
 
          local function onDisconnect(connection, payload)
 -- this should rather be a log call, but log is not available here
---            print("disconnected")
+--            lprint(4,"disconnected")
             if connectionThread then
                connectionThread = nil
                collectgarbage()

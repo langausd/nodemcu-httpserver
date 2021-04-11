@@ -1,32 +1,42 @@
--- check/flash/use LFS support, if possible
-if node.getpartitiontable().lfs_size > 0 then
-   if file.exists("lfs.img") then
-      if file.exists("lfs_lock") then
-	 file.remove("lfs_lock")
-	 file.rename("lfs.img", "lfs_current.img")
-      else
-	 local f = file.open("lfs_lock", "w")
-	 f:flush()
-	 f:close()
-	 node.LFS.reload("lfs.img")
-      end
+-- init.lua (LFS) - do the app initialization
+
+-- provide a convenient/efficient global table named "srv" for
+-- user-accessible and/or frequently used HTTP server functions
+-- This global requires a bit less RAM than require()ing a real module
+srv = LFS.srv()
+
+-- reduce output by using dprint
+-- possible levels:
+-- 0 - emergency
+-- 1 - errors
+-- 2 - warnings
+-- 3 - normal log output
+-- 4 - debug output
+-- 5 or higher - very chatty debugging
+---------------------------------------
+
+verbosity=1
+function dprint(level, ...)
+   if level <= verbosity then
+      print(unpack(arg))
    end
-   local init = node.LFS.get("_init")
-   if (init == nil) then
-      print("missing _init() function in LFS. Please load lfs.img!")
-   else
-      init()
-   end
-   init = nil
-   collectgarbage()
-else
-   print "Need recent nodeMCU firmware with LFS support!  ABORTING"
 end
 
-if ( pcall(LFS.init) ) then
-   -- print("init completed")
-else
-   print("init FAILED!")
+lprint=dprint
+
+-- Set up NodeMCU's WiFi
+LFS.wifiSetup()
+
+-- Start nodemcu-httpsertver
+LFS.srvInit()
+
+---------------------------------------------------
+-- your application specific init code goes here --
+---------------------------------------------------
+
+function noop()
 end
 
+-- disable console output completely, so the UART port isn't cluttered
+-- lprint=noop
 
